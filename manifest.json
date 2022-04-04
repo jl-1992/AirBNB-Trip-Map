@@ -1,0 +1,22 @@
+{
+  "name": "AirBNB Trip Map",
+  "description": "Creates an interactive map of past trips",
+  "version": "0.0.1",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": ["storage", "webNavigation", "scripting"],
+  "content_scripts": [{
+    "matches": ["https://*.airbnb.com/trips/v1"],
+    "run_at": "document_end",
+    "js": ["makeMap.js"]
+  }],
+  "action": {
+    "default_popup": "map.html"
+  },
+  "host_permissions": ["https://*.airbnb.com/trips/v1"],
+  "icons": {
+    "128": "/images/world.png"
+  }
+}
