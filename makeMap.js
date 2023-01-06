@@ -1,4 +1,5 @@
 chrome.storage.local.get(['coordinates'], function(result) {
+     // Comment out negation on line 3 to run again
      if (!result.coordinates) {
           // Interval to click 'Show More' so all past trips are on document
           var intervalId = setInterval(() => {
@@ -13,18 +14,18 @@ chrome.storage.local.get(['coordinates'], function(result) {
 
           /**
            * Returns a promise with the coordinate [lat, long] grabbed from result.
-           * */
+           */
           function getCoordinate(cityLinkElement) {
                return fetch(cityLinkElement.href).then(function (response) {
                          return response.text();
                     }).then(function (html) {
-                         // Convert the HTML string into a document object
-                         var parser = new DOMParser();
-                         var doc = parser.parseFromString(html, 'text/html');
-                         var addressElement = doc.querySelectorAll("a[data-testid='reservation-destination-link'][href^='https://www.google.com/maps']")[0];
-                         var coordinateUrl = new URL(addressElement.href);
-                         var searchParams = coordinateUrl.searchParams;
-                         var coordinate = searchParams.get("query").split(",").map(Number);
+                         // parse response text for lat/lng (mix of html and json)
+                         var coordinate = [];
+                         var latIndex = html.indexOf('\"lat\":');
+                         html = html.substring(latIndex, latIndex + 75);
+                         var latLngText = html.split(",");
+                         coordinate.push(latLngText[0].substring(6));
+                         coordinate.push(latLngText[1].substring(6));
                          return coordinate;
                     }).catch(function (err) {
                          console.warn('Something went wrong.', err);
